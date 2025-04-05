@@ -14,9 +14,15 @@ from pathlib import Path
 import os
 from urllib.parse import urlparse
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgres://postgres:postgres@db:5432/postgres")
+DATABASE_URL = os.getenv(
+    "DATABASE_URL", "postgres://postgres:postgres@db:5432/postgres"
+)
+print(DATABASE_URL)
 
 db_url = urlparse(DATABASE_URL)
+print(
+    f"Parsed DB URL - Host: {db_url.hostname}, Port: {db_url.port}, Name: {db_url.path[1:]}"
+)  # Debug: Print parsed values
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -44,6 +50,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "users.apps.UsersConfig",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
@@ -55,6 +65,13 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+}
 
 ROOT_URLCONF = "backend.urls"
 

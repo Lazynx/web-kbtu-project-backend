@@ -7,3 +7,8 @@ packaging==24.2
 pathspec==0.12.1
 platformdirs==4.3.6
 psycopg2-binary>=2.9.9
+djangorestframework-simplejwt==5.5.0
+pyjwt==2.9.0
+markdown==3.7
+django-filter==25.1
+drf-yasg==1.21.10

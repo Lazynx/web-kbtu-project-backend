@@ -12,11 +12,12 @@ services:
       - "8008:8000"
     volumes:
       - .:/app
+    restart:
+      always
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     depends_on:
-      - db
-    networks:
-      - local-network
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:16-alpine
@@ -28,7 +29,10 @@ services:
       - "5555:5432"
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
-
-networks:
-  local-network:
-    external: true
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
