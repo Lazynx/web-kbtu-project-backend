@@ -1,3 +1,3 @@
-from .tours import tour_list_create, create_category, TourDetailView
-from .bookings import CreateBookingView, BookingListCreateView, BookingDetailView
+from .bookings import BookingDetailView, BookingListCreateView, CreateBookingView
 from .reviews import create_review
+from .tours import TourDetailView, create_category, tour_list_create
