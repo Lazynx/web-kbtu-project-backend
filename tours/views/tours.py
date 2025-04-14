@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..models import Tour
+from ..models import Tour, Category
 from ..serializers import CategorySerializer, TourFilterSerializer, TourSerializer
 
 
@@ -65,6 +65,13 @@ def tour_list_create(request):
 
 
 @extend_schema(
+    methods=['GET'],
+    responses={200: CategorySerializer(many=True)},
+    description='Получить список всех категорий',
+    tags=['Categories'],
+)
+@extend_schema(
+    methods=['POST'],
     request=CategorySerializer,
     responses={
         201: CategorySerializer,
@@ -74,14 +81,25 @@ def tour_list_create(request):
     description='Создать новую категорию',
     tags=['Categories'],
 )
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def create_category(request):
-    serializer = CategorySerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
+def category_list_create(request):
+    if request.method == 'GET':
+        categories = Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        if not request.user.is_authenticated:
+            return Response(
+                {'error': 'Authentication required'},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        serializer = CategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TourDetailView(APIView):

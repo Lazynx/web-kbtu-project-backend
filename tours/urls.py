@@ -4,7 +4,7 @@ from .views import (
     BookingDetailView,
     BookingListCreateView,
     TourDetailView,
-    create_category,
+    category_list_create,
     create_review,
     tour_list_create,
 )
@@ -12,7 +12,7 @@ from .views import (
 urlpatterns = [
     path('tours/', tour_list_create, name='tour_list_create'),
     path('tours/<uuid:tour_id>/', TourDetailView.as_view(), name='tour_detail'),
-    path('categories/', create_category, name='create_category'),
+    path('categories/', category_list_create, name='category_list_create'),
     path('bookings/', BookingListCreateView.as_view(), name='booking_list_create'),
     path(
         'bookings/<uuid:booking_id>/',
