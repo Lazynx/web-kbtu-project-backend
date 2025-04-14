@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 import os
 from urllib.parse import urlparse
@@ -17,13 +17,16 @@ from urllib.parse import urlparse
 DATABASE_URL = os.getenv(
     "DATABASE_URL", "postgres://postgres:postgres@db:5432/postgres"
 )
-print(DATABASE_URL)
+
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_BUCKET_NAME")
+AWS_S3_REGION_NAME = os.getenv("AWS_REGION")
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = 'public-read'
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
 db_url = urlparse(DATABASE_URL)
-print(
-    f"Parsed DB URL - Host: {db_url.hostname}, Port: {db_url.port}, Name: {db_url.path[1:]}"
-)  # Debug: Print parsed values
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -52,10 +55,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt",
-    "users.apps.UsersConfig",
-    "drf_yasg",
-    "tours",
-    "bookings"
+    "drf_spectacular",
+    "tours.apps.ToursConfig",
+    "userauth.apps.AuthConfig",
 ]
 
 MIDDLEWARE = [
@@ -73,6 +75,12 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
 ROOT_URLCONF = "backend.urls"
@@ -152,3 +160,11 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Hotel API",
+    "DESCRIPTION": "API documentation for hotel API",
+    "VERSION": "v1",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SECURITY": [{"BearerAuth": []}],
+}
