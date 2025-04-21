@@ -14,3 +14,4 @@ django-filter==25.1
 drf-spectacular==0.28.0
 boto3==1.37.33
 requests==2.32.3
+django-cors-headers==4.7.0
