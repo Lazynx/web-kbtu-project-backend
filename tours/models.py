@@ -63,6 +63,10 @@ class Booking(models.Model):
         ],
         default='pending',
     )
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'tour'], name='unique_user_tour_booking')
+        ]
 
     def __str__(self):
         return f'{self.user.username} - {self.tour.name}'

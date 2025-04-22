@@ -24,6 +24,14 @@ class CreateBookingView(APIView):
         tags=['Bookings'],
     )
     def post(self, request):
+        tour_id = request.data.get('tour')
+        if not tour_id:
+            return Response({'error': 'Tour ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        already_booked = Booking.objects.filter(user=request.user, tour_id=tour_id).exists()
+        if already_booked:
+            return Response({'error': 'Вы уже бронировали этот тур.'}, status=status.HTTP_400_BAD_REQUEST)
+        
         serializer = BookingSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
