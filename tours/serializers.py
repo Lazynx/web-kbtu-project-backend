@@ -26,12 +26,18 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
-    tour = serializers.PrimaryKeyRelatedField(read_only=True)
+    tour = serializers.UUIDField(write_only=True)
 
     class Meta:
         model = Review
         fields = ['id', 'user', 'tour', 'rating', 'comment', 'created_at']
         read_only_fields = ['user', 'created_at']
+
+    def create(self, validated_data):
+        tour_uuid = validated_data.pop('tour')
+        tour = Tour.objects.get(id=tour_uuid)
+        review = Review.objects.create(tour=tour, **validated_data)
+        return review
 
 
 class TourSerializer(serializers.ModelSerializer):
@@ -52,6 +58,7 @@ class TourSerializer(serializers.ModelSerializer):
             'price',
             'start_date',
             'end_date',
+            'rating',
             'category',
             'category_id',
             'is_active',
