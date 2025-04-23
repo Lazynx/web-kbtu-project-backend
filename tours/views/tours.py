@@ -103,7 +103,10 @@ def category_list_create(request):
 
 
 class TourDetailView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, tour_id):
+        return get_object_or_404(Tour, id=tour_id)
 
     @extend_schema(
         responses={
@@ -114,6 +117,44 @@ class TourDetailView(APIView):
         tags=['Tours'],
     )
     def get(self, request, tour_id):
-        tour = get_object_or_404(Tour, id=tour_id, is_active=True)
+        tour = self.get_object(tour_id)
         serializer = TourSerializer(tour)
         return Response(serializer.data)
+
+    @extend_schema(
+        request=TourSerializer,
+        responses={200: TourSerializer, 400: OpenApiResponse(description='Неверные данные')},
+        description='Обновить тур (полное обновление)',
+        tags=['Tours'],
+    )
+    def put(self, request, tour_id):
+        tour = self.get_object(tour_id)
+        serializer = TourSerializer(tour, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @extend_schema(
+        request=TourSerializer,
+        responses={200: TourSerializer, 400: OpenApiResponse(description='Неверные данные')},
+        description='Обновить тур (частичное обновление)',
+        tags=['Tours'],
+    )
+    def patch(self, request, tour_id):
+        tour = self.get_object(tour_id)
+        serializer = TourSerializer(tour, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @extend_schema(
+        responses={204: OpenApiResponse(description='Тур удалён')},
+        description='Удалить тур',
+        tags=['Tours'],
+    )
+    def delete(self, request, tour_id):
+        tour = self.get_object(tour_id)
+        tour.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
