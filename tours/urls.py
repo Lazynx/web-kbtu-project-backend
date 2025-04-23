@@ -20,4 +20,5 @@ urlpatterns = [
         name='booking_detail',
     ),
     path('reviews/', create_review, name='create_review'),
+    path('reviews/<uuid:review_id>/', delete_review, name='delete-review'),
 ]
