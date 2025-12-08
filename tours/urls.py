@@ -8,6 +8,7 @@ from .views import (
     create_review,
     tour_list_create,
 )
+from .views.reviews import delete_review
 
 urlpatterns = [
     path('tours/', tour_list_create, name='tour_list_create'),
