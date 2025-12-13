@@ -34,7 +34,7 @@ SECRET_KEY = 'django-insecure-8hkgt4i3=%#&f&4n4*bg=($0&dril9h^n+*o&cm)z0bfr)mvza
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'web-kbtu-project-backend.localhost:8082']
 
 
 # Application definition
